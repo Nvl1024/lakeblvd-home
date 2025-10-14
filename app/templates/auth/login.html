@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="url_for('submit-login')", method="post">
+    <div>
+        {{login_form.username.label}}
+        {{login_form.username()}}
+        {% if login_form.username.errors %}
+            <ul>
+                {% for error in login_form.username.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div>
+        {{login_form.password.label}}
+        {{login_form.password()}}
+        {% if login_form.password.errors %}
+            <ul>
+                {% for error in login_form.password.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div>
+        {{form.submit()}}
+    </div>
+</form>
+{% endblock %}

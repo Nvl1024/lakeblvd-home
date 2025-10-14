@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LakeBlvd - Home</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use Inter as the default font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Site Logo/Name -->
+            <a href="/" class="text-2xl font-bold text-gray-900">
+                LakeBlvd
+            </a>
+            <!-- Navigation Links & Login Button -->
+            <div class="flex items-center space-x-6">
+                <a href="about" class="text-gray-600 hover:text-indigo-600 transition duration-300">About</a>
+                <!-- Login Button -->
+                <a href="login" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out shadow-md">
+                    Login   
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="container mx-auto px-6 py-20 text-center">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-white mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 LakeBlvd. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
+
