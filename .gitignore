@@ -4,3 +4,4 @@ _config
 _notes
 .venv*
 homepage.db*
+node_modules
