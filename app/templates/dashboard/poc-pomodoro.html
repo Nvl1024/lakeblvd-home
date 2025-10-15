@@ -1,0 +1,193 @@
+<!--  
+AI generated, example of how to call JS-vanilla
+need to design prototype and rewrite the code
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Pomodoro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- No CSS framework required. Minimal inline style for layout. -->
+  <style>
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      display: grid; place-items: center; min-height: 100vh; background:#101318; color:#e5e7eb;
+    }
+    .card { width: 320px; padding: 20px; border-radius: 14px; background:#1b1f27; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+    .row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .btn { padding:10px 14px; border:0; border-radius:10px; background:#2b3340; color:#e5e7eb; cursor:pointer }
+    .btn:disabled { opacity:.5; cursor:default; }
+    .timer { font-variant-numeric: tabular-nums; font-size: 64px; text-align:center; margin: 10px 0 4px }
+    .sub { opacity:.8; text-align:center; margin-bottom:12px }
+    .row input { width: 90px; padding:6px 8px; border-radius:8px; border:1px solid #3a4557; background:#151922; color:#e5e7eb }
+  </style>
+</head>
+<body>
+  <main class="card" role="region" aria-label="Pomodoro timer">
+    <div id="phase" class="sub" aria-live="polite">Work</div>
+    <div id="display" class="timer" aria-live="polite">25:00</div>
+
+    <div class="row" style="margin-bottom:10px">
+      <button id="start" class="btn">Start</button>
+      <button id="pause" class="btn" disabled>Pause</button>
+      <button id="reset" class="btn">Reset</button>
+    </div>
+
+    <div class="row" style="margin-bottom:8px">
+      <label>Work <input id="workMins" type="number" min="1" value="25"></label>
+      <label>Break <input id="breakMins" type="number" min="1" value="5"></label>
+      <button id="apply" class="btn">Apply</button>
+    </div>
+
+    <div class="sub">Notifications are used when a session completes.</div>
+  </main>
+
+  <script>
+    // Minimal state machine: "work" -> "break" -> "work" ...
+    const display = document.getElementById('display');
+    const phaseEl = document.getElementById('phase');
+    const startBtn = document.getElementById('start');
+    const pauseBtn = document.getElementById('pause');
+    const resetBtn = document.getElementById('reset');
+    const workInput = document.getElementById('workMins');
+    const breakInput = document.getElementById('breakMins');
+    const applyBtn = document.getElementById('apply');
+
+    let state = {
+      phase: 'work',            // 'work' | 'break'
+      remaining: 25 * 60,       // seconds
+      running: false,
+      intervalId: null,
+      workSecs: 25 * 60,
+      breakSecs: 5 * 60,
+    };
+
+    // Load persisted prefs
+    (() => {
+      const saved = JSON.parse(localStorage.getItem('pomodoro_v1') || '{}');
+      if (saved.workSecs) state.workSecs = saved.workSecs;
+      if (saved.breakSecs) state.breakSecs = saved.breakSecs;
+      if (saved.phase) state.phase = saved.phase;
+      if (Number.isFinite(saved.remaining)) state.remaining = saved.remaining;
+      workInput.value = Math.max(1, Math.round(state.workSecs/60));
+      breakInput.value = Math.max(1, Math.round(state.breakSecs/60));
+      setPhaseColors();
+      render();
+    })();
+
+    function persist() {
+      localStorage.setItem('pomodoro_v1', JSON.stringify({
+        workSecs: state.workSecs,
+        breakSecs: state.breakSecs,
+        phase: state.phase,
+        remaining: state.remaining
+      }));
+    }
+
+    function setPhaseColors() {
+      // Background color flip per phase, no CSS framework
+      document.body.style.background = state.phase === 'work' ? '#101318' : '#0f1a14';
+      document.querySelector('.card').style.background = state.phase === 'work' ? '#1b1f27' : '#14211a';
+      phaseEl.textContent = state.phase === 'work' ? 'Work' : 'Break';
+    }
+
+    function format(secs) {
+      const m = String(Math.floor(secs/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function render() {
+      display.textContent = format(state.remaining);
+      phaseEl.setAttribute('aria-label', `Phase ${state.phase}, ${format(state.remaining)} remaining`);
+      startBtn.disabled = state.running;
+      pauseBtn.disabled = !state.running;
+      persist();
+    }
+
+    function tick() {
+      if (!state.running) return;
+      if (state.remaining > 0) {
+        state.remaining--;
+        render();
+        return;
+      }
+      // Phase complete
+      notify(`${state.phase === 'work' ? 'Work' : 'Break'} session complete`);
+      // Swap phase
+      if (state.phase === 'work') {
+        state.phase = 'break';
+        state.remaining = state.breakSecs;
+      } else {
+        state.phase = 'work';
+        state.remaining = state.workSecs;
+      }
+      setPhaseColors();
+      render();
+    }
+
+    function start() {
+      if (state.running) return;
+      state.running = true;
+      render();
+      if (!state.intervalId) {
+        state.intervalId = setInterval(tick, 1000);
+      }
+    }
+
+    function pause() {
+      state.running = false;
+      render();
+    }
+
+    function reset() {
+      state.running = false;
+      state.phase = 'work';
+      state.remaining = state.workSecs;
+      setPhaseColors();
+      render();
+    }
+
+    function applyDurations() {
+      const w = Math.max(1, parseInt(workInput.value || '25', 10));
+      const b = Math.max(1, parseInt(breakInput.value || '5', 10));
+      state.workSecs = w * 60;
+      state.breakSecs = b * 60;
+      if (state.phase === 'work') state.remaining = state.workSecs;
+      else state.remaining = state.breakSecs;
+      render();
+    }
+
+    async function notify(msg) {
+      try {
+        if (Notification && Notification.permission === 'granted') {
+          new Notification('Pomodoro', { body: msg });
+        } else if (Notification && Notification.permission !== 'denied') {
+          const p = await Notification.requestPermission();
+          if (p === 'granted') new Notification('Pomodoro', { body: msg });
+        }
+      } catch { /* notifications not supported; ignore */ }
+      // Optional beep without any assets
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sine'; o.frequency.value = 880; g.gain.value = 0.05;
+        o.start(); setTimeout(()=>{o.stop(); ctx.close();}, 300);
+      } catch {}
+    }
+
+    // Wire up controls
+    startBtn.addEventListener('click', start);
+    pauseBtn.addEventListener('click', pause);
+    resetBtn.addEventListener('click', reset);
+    applyBtn.addEventListener('click', applyDurations);
+
+    // Clean up on unload
+    window.addEventListener('beforeunload', () => { if (state.intervalId) clearInterval(state.intervalId); });
+
+    // Initial render already called in IIFE above
+  </script>
+</body>
+</html>
