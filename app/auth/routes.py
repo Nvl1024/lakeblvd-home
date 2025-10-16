@@ -20,7 +20,7 @@ def login():
         for field, errors in form.errors.items():
             for err in errors:
                 flash(f"{field}: {err}")
-    return render_template("login.html", login_form=form)
+    return render_template("auth/login.html", login_form=form)
 
 @bp.route('/register', methods=["GET", "POST"])
 def register():
@@ -36,7 +36,7 @@ def register():
         for field, errors in form.errors.items():
             for err in errors:
                 flash(f"{field}: {err}")
-    return render_template("register.html", register_form=form)
+    return render_template("auth/register.html", register_form=form)
 
 @bp.route('/logout', methods=["GET", "POST"])
 @login_required
@@ -49,4 +49,6 @@ def logout():
             return redirect(url_for('home.index'))
         if form.cancel.data:
             return redirect(url_for('home.index'))
-    return render_template("logout.html", logout_form=form)
+    return render_template("auth/logout.html", logout_form=form)
+
+

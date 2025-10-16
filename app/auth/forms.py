@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, EqualTo, Length, ValidationError
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from .models import User
 from config import section
 
@@ -17,19 +17,25 @@ def username_valid(form, field):
 
 class RegisterForm(FlaskForm):
     username = StringField(
-        label="Username", validators=[DataRequired(), username_valid])
+        label="Username:",
+        validators=[
+            DataRequired(), username_valid])
     password = PasswordField(
-        label="Enter your password:", validators=[DataRequired(), Length(min=8)])
+        label="Enter your password:",
+        validators=[
+            DataRequired(),
+            Length(min=8, message='password length at least 8 characters')])
     confirm_password = PasswordField(
         label="Confirm your password:",
         validators=[DataRequired(),
-                    EqualTo('password.data', message='password must match')]
+                    EqualTo('password', message='password must match')]
                     )
+    submit = SubmitField(label="Submit")
 
 class LoginForm(FlaskForm):
     username = StringField(label="Username:", validators=[DataRequired()])
     password = PasswordField(label="Password:", validators=[DataRequired()])
-    remember_me = SelectField(label="Remember me")
+    remember_me = BooleanField(label="Remember me")
     submit = SubmitField(label="Submit")
 
 # TODO: logout form with button confirmation

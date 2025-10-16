@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>Already registered? <a href="{{url_for('auth.login')}}">Log In</a></p>
+
+<form action="" method="post" novalidate>
+    {{ register_form.hidden_tag() }}
+    <p>
+        {{ register_form.username.label }}
+        {{ register_form.username(size=32) }}<br>
+        <!-- error handling  -->
+        {% if register_form.username.errors %}
+        <ul>
+            {% for error in register_form.username.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </p>
+    <p>
+        {{ register_form.password.label }}
+        {{ register_form.password(size=32) }}<br>
+        <!-- error handling  -->
+        {% if register_form.password.errors %}
+        <ul>
+            {% for error in register_form.password.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </p>
+    <p>
+        {{ register_form.confirm_password.label }}
+        {{ register_form.confirm_password(size=32)}}<br>
+        {% if register_form.confirm_password.errors %}
+        <ul>
+            {% for error in register_form.confirm_password.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </p>
+    <p>{{ register_form.submit() }}</p>
+</form>
+{% endblock %}
