@@ -38,7 +38,5 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField(label="Remember me")
     submit = SubmitField(label="Submit")
 
-# TODO: logout form with button confirmation
 class LogoutForm(FlaskForm):
-    confirm = SubmitField(label="Confirm")
-    cancel = SubmitField(label="Cancel")
+    submit = SubmitField(label="Confirm")

@@ -42,13 +42,14 @@ def register():
 @login_required
 def logout():
     form = LogoutForm()
-    if form.validate_on_submit():
-        if form.confirm.data:
+    # FIXME: confirm button doesn't respond, possibly due to validation error
+    if request.method == "POST":
+        if form.validate_on_submit():
             logout_user()
             flash("You have been logged out.")
             return redirect(url_for('home.index'))
-        if form.cancel.data:
-            return redirect(url_for('home.index'))
+        else:
+            error_msg = ';'.join(error for error in form.errors)
+            # flash(error_msg)
+            raise RuntimeError(error_msg)
     return render_template("auth/logout.html", logout_form=form)
-
-
