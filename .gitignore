@@ -3,6 +3,5 @@ __pycache__
 _config
 _notes
 .venv*
-homepage.db*
 node_modules
-instance
+*.db
