@@ -1,22 +1,26 @@
 """
 lakeblvd.net homepage
 """
-from flask import Flask, render_template, url_for
-from ..extensions import db
-from config import section
-from ..auth.forms import LoginForm
+from flask import render_template, request
+from flask_login import current_user, login_required
+import markdown
+from . import bp
 
-def create_app():
-    app = Flask(__name__)
-    SECRET_KEY = section("App")['SECRET_KEY']
-    app.config['SECRET_KEY'] = SECRET_KEY
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///lakeblvd-home.db"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    return app
-
-app = create_app()
-
-@app.route('/', methods=["GET", "POST"])
+@bp.route('/', methods=["GET"])
 def index():
-    return render_template("index.html")
+    return render_template("home/index.html")
+
+@bp.route('/about', methods=["GET", "POST"])
+def about():
+    with open('app/static/home/about.md') as file:
+        md_content = file.read()
+    md_html = markdown.markdown(md_content)
+    return render_template("home/about-md.html", content=md_html)
+
+@bp.route('/profile', methods=["GET", "POST"])
+@login_required
+def profile():
+    # TODO: allow updating user profile
+    # if request.method == "POST":
+    #     form = 
+    return render_template("home/profile.html", user=current_user)

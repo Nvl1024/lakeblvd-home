@@ -1,38 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<center>
-    <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
-    <form action="", method="post">
-        {{ login_form.csrf_token }}
-        <div>
-            {{login_form.username.label}}
-            {{login_form.username()}}
-            {% if login_form.username.errors %}
-                <ul>
-                    {% for error in login_form.username.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-        <div>
-            {{login_form.password.label}}
-            {{login_form.password()}}
-            {% if login_form.password.errors %}
-                <ul>
-                    {% for error in login_form.password.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-        <div>
-            {{ login_form.remember_me() }} {{ login_form.remember_me.label }}
-        </div>
-        <div>
-            {{login_form.submit()}}
-        </div>
-    </form>
-</center>
+<main>
+    <center>
+        <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
+        <form action="", method="post">
+            {{ login_form.csrf_token }}
+            <div>
+                {{login_form.username.label}}
+                {{login_form.username()}}
+                {% if login_form.username.errors %}
+                    <ul>
+                        {% for error in login_form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{login_form.password.label}}
+                {{login_form.password()}}
+                {% if login_form.password.errors %}
+                    <ul>
+                        {% for error in login_form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{ login_form.remember_me() }} {{ login_form.remember_me.label }}
+            </div>
+            <div>
+                {{login_form.submit()}}
+            </div>
+        </form>
+    </center>
+</main>
 {% endblock %}

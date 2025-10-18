@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LakeBlvd - Home</title>
+    {% if title %}
+    <title>LakeBlvd - {{title}}</title>
+    {% else %}
+    <title>LakeBlvd</title>
+    {% endif %}
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="../static/src/output.css" rel="stylesheet">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,32 +22,67 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
 
+<body>
+ <!-- class="bg-gray-50 text-gray-800"> -->
     <!-- Header Section -->
     <header class="bg-white shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <!-- Site Logo/Name -->
-            <a href="/" class="text-2xl font-bold text-gray-900">
+            <a href="{{url_for('home.index')}}" class="text-2xl font-bold text-gray-900">
                 LakeBlvd
             </a>
-            <!-- Navigation Links & Login Button -->
+            <!-- Navigation Links & Login / Account Button -->
             <div class="flex items-center space-x-6">
-                <a href="about" class="text-gray-600 hover:text-indigo-600 transition duration-300">About</a>
-                <!-- Login Button -->
-                <a href="login" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out shadow-md">
+                {% for item in navigation %}
+                    <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+                {% endfor %}
+                <a href="{{url_for('home.about')}}" class="text-gray-600 hover:text-indigo-600 transition duration-300">About</a>
+                <!-- Login / Logout Button -->
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('home.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Account</a>
+                <!-- CUTOFF BELOW: drop down menu below doesn't work -->
+                <li class="relative group">
+                    <!-- Button toggles visibility via hover (group-hover) and is keyboard-focusable -->
+                    <button type="button" class="focus:outline-none px-3 py-2 rounded-md inline-flex items-center" aria-haspopup="true" aria-expanded="false">
+                        My Account
+                    </button>
+
+                    <!-- Dropdown menu: hidden by default, shown on hover/focus via group-hover:block -->
+                    <ul class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50" role="menu" aria-label="Account menu">
+                        <li>
+                            <a href="{{ url_for('home.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Profile</a>
+                        </li>
+                        <li>
+                            <!-- Link to logout confirmation page (the actual logout happens on POST from that page) -->
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <a href="{{url_for('auth.login')}}" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out shadow-md">
                     Login   
                 </a>
+                {% endif %}
             </div>
         </nav>
     </header>
 
-    <!-- Main Content Section -->
-    <main class="container mx-auto px-6 py-20 text-center">
-        {% block content %}
-        {% endblock %}
-    </main>
+    <!-- Display Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 
+    <!-- Main Content Section -->
+    {% block content %}
+    {% endblock %}
+    
     <!-- Footer Section -->
     <footer class="bg-white mt-20">
         <div class="container mx-auto px-6 py-4 text-center text-gray-500">
