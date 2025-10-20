@@ -18,6 +18,9 @@ class User(UserMixin, db.Model):
       return False
     return check_password_hash(self.password_hash, password)
 
+  def change_password(self, password: str) -> None:
+    self.password_hash = generate_password_hash(password)
+
   @staticmethod
   def is_valid_name(username: str) -> bool:
     """Return True if the username is available/valid; False otherwise.

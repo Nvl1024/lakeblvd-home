@@ -40,25 +40,7 @@
                 <a href="{{url_for('home.about')}}" class="text-gray-600 hover:text-indigo-600 transition duration-300">About</a>
                 <!-- Login / Logout Button -->
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('home.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Account</a>
-                <!-- CUTOFF BELOW: drop down menu below doesn't work -->
-                <li class="relative group">
-                    <!-- Button toggles visibility via hover (group-hover) and is keyboard-focusable -->
-                    <button type="button" class="focus:outline-none px-3 py-2 rounded-md inline-flex items-center" aria-haspopup="true" aria-expanded="false">
-                        My Account
-                    </button>
-
-                    <!-- Dropdown menu: hidden by default, shown on hover/focus via group-hover:block -->
-                    <ul class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50" role="menu" aria-label="Account menu">
-                        <li>
-                            <a href="{{ url_for('home.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Profile</a>
-                        </li>
-                        <li>
-                            <!-- Link to logout confirmation page (the actual logout happens on POST from that page) -->
-                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Log Out</a>
-                        </li>
-                    </ul>
-                </li>
+                <a href="{{ url_for('profile.account') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Account</a>
                 {% else %}
                 <a href="{{url_for('auth.login')}}" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out shadow-md">
                     Login   

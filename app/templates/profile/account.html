@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main>
+    <h2><div>Welcome back, {{user.name}}</div></h2><br>
+    <center>
+        <p><div><a href="{{url_for('profile.change_password')}}">change password</a></div></p>
+        <p><div>delete account</div></p><br>
+        <p><a href="{{url_for('auth.logout')}}">Log Out</a></p>
+    </center>
+</main>
+{% endblock %}

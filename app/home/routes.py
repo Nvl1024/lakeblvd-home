@@ -17,10 +17,3 @@ def about():
     md_html = markdown.markdown(md_content)
     return render_template("home/about-md.html", content=md_html)
 
-@bp.route('/profile', methods=["GET", "POST"])
-@login_required
-def profile():
-    # TODO: allow updating user profile
-    # if request.method == "POST":
-    #     form = 
-    return render_template("home/profile.html", user=current_user)

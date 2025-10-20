@@ -1,9 +1,11 @@
+from os import environ
 from flask import Flask
-from .auth import bp as auth_bp
 from config import section
 from .extensions import db, csrf, login_manager
-from os import environ
+from .auth import bp as auth_bp
 from .home import bp as home_bp
+from .profile import bp as profile_bp
+
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +23,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(profile_bp)
 
     # Create tables in dev if needed
     with app.app_context():
