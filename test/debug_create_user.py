@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from app import create_app, db
-from app.auth.models import User
+from app.models import User
 
 
 db = SQLAlchemy()

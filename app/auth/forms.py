@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, EqualTo, Length, ValidationError
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from .models import User
+from ..models import User
 
 
 def username_valid(form, field):

@@ -1,12 +1,15 @@
+"""
+models across the website
+"""
 from flask_login import UserMixin
-from ..extensions import db
+from .extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(UserMixin, db.Model):
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   name = db.Column(db.String(100), unique=True)
-  password_hash = db.Column(db.String(200))
+  password_hash = db.Column(db.String(255))
 
   def set_password(self, password: str) -> None:
     """Hash and store a plaintext password into `hash`."""

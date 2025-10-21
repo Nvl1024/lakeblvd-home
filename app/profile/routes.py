@@ -3,7 +3,7 @@ user profile page
 """
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
-from ..auth.models import User
+from ..models import User
 from ..auth.forms import LogoutForm
 from .forms import ChangePasswordForm
 from . import bp

@@ -1,6 +1,6 @@
 from os import environ
 from flask import Flask
-from .extensions import db, csrf, login_manager
+from .extensions import db, csrf, login_manager, migrate
 from .auth import bp as auth_bp
 from .home import bp as home_bp
 from .profile import bp as profile_bp
@@ -26,6 +26,7 @@ def create_app():
 
     # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     csrf.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
@@ -37,9 +38,9 @@ def create_app():
 
     # Create tables in dev if needed
     with app.app_context():
-        from .auth import models  # ensure models are imported
+        from . import models  # ensure models are imported
         # Configure Flask-Login user loader
-        from .auth.models import User
+        from .models import User
         @login_manager.user_loader
         def load_user(user_id: str):  # pragma: no cover - tiny glue code
             try:
