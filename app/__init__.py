@@ -11,6 +11,11 @@ def create_app():
     if environ.get('HEROKU_PROD_ENV'):
         SECRET_KEY = environ.get('FLASK_KEY')
         SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
+        assert isinstance(SQLALCHEMY_DATABASE_URI, str), "DATABASE_URL not found"
+        if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+            SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
+                "postgres://", "postgresql://", 1
+            )
     else:
         from config import section
         SECRET_KEY = section("App")["SECRET_KEY"]
