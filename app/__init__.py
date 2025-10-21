@@ -1,6 +1,5 @@
 from os import environ
 from flask import Flask
-from config import section
 from .extensions import db, csrf, login_manager
 from .auth import bp as auth_bp
 from .home import bp as home_bp
@@ -9,9 +8,16 @@ from .profile import bp as profile_bp
 
 def create_app():
     app = Flask(__name__)
-    SECRET_KEY = section("App")["SECRET_KEY"]
+    # SECRET_KEY = section("App")["SECRET_KEY"]
+    if environ.get('HEROKU_PROD_ENV'):
+        SECRET_KEY = environ.get('FLASK_KEY')
+        SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
+    else:
+        from config import section
+        SECRET_KEY = section("App")["SECRET_KEY"]
+        SQLALCHEMY_DATABASE_URI = "sqlite:///lakeblvd-home.db"
     app.config["SECRET_KEY"] = SECRET_KEY
-    app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("DATABASE_URL") or "sqlite:///lakeblvd-home.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Initialize extensions
