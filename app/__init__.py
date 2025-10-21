@@ -8,7 +8,6 @@ from .profile import bp as profile_bp
 
 def create_app():
     app = Flask(__name__)
-    # SECRET_KEY = section("App")["SECRET_KEY"]
     if environ.get('HEROKU_PROD_ENV'):
         SECRET_KEY = environ.get('FLASK_KEY')
         SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
