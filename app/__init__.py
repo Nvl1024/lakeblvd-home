@@ -1,7 +1,8 @@
 from os import environ
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
-# from flask_talisman import Talisman
+from flask_talisman import Talisman
+from .app_config import Development, Production, Testing
 from .extensions import db, csrf, login_manager, migrate
 from .auth import bp as auth_bp
 from .home import bp as home_bp
@@ -11,40 +12,30 @@ from .profile import bp as profile_bp
 def create_app():
     app = Flask(__name__)
     if environ.get('HEROKU_PROD_ENV'):
-        SECRET_KEY = environ.get('FLASK_KEY')
-        SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
-        assert isinstance(SQLALCHEMY_DATABASE_URI, str), "DATABASE_URL not found"
-        if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
-            SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
-                "postgres://", "postgresql://", 1
-            )
+        config_class = Production()
     else:
-        from config import section
-        SECRET_KEY = section("App")["SECRET_KEY"]
-        SQLALCHEMY_DATABASE_URI = "sqlite:///lakeblvd-home.db"
-    app.config["SECRET_KEY"] = SECRET_KEY
-    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        config_class = Development()
+    app.config.from_object(config_class)
 
     # to trust proxy headers injected by PaaS
     app.wsgi_app = ProxyFix(
         app.wsgi_app,
         x_for=1, # 2 in case placing cloudflare in front
         x_proto=1, x_host=1, x_port=1)
-    # # Talisman security enhancement
-    # csp = {
-    #     'default-src': '\'self\''
-    # }
-    # Talisman(
-    #     app,
-    #     content_security_policy=csp,
-    #     force_https=True,
-    #     strict_transport_security=True,
-    #     strict_transport_security_max_age=31536000,
-    #     frame_options='DENY',
-    #     referrer_policy='no-referrer',
-    #     permissions_policy={"geolocation": "()"},
-    # )
+    # Talisman CSP and security enhancement
+    Talisman(
+        app,
+        content_security_policy=app.config["TALISMAN_CSP"],
+        content_security_policy_report_only=app.config.get("TALISMAN_REPORT_ONLY", False),
+        content_security_policy_report_uri=app.config.get("TALISMAN_REPORT_URI"),
+        content_security_policy_nonce_in=["script-src", "style-src"],
+        force_https=app.config.get("TALISMAN_FORCE_HTTPS"),
+        strict_transport_security=app.config.get("TALISMAN_FORCE_HTTPS"),
+        strict_transport_security_max_age=31536000,
+        frame_options='DENY',
+        referrer_policy='no-referrer',
+        permissions_policy={"geolocation": "()"},
+    )
 
     # Initialize extensions
     db.init_app(app)
