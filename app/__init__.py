@@ -1,5 +1,7 @@
 from os import environ
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
+# from flask_talisman import Talisman
 from .extensions import db, csrf, login_manager, migrate
 from .auth import bp as auth_bp
 from .home import bp as home_bp
@@ -23,6 +25,26 @@ def create_app():
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # to trust proxy headers injected by PaaS
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=1, # 2 in case placing cloudflare in front
+        x_proto=1, x_host=1, x_port=1)
+    # # Talisman security enhancement
+    # csp = {
+    #     'default-src': '\'self\''
+    # }
+    # Talisman(
+    #     app,
+    #     content_security_policy=csp,
+    #     force_https=True,
+    #     strict_transport_security=True,
+    #     strict_transport_security_max_age=31536000,
+    #     frame_options='DENY',
+    #     referrer_policy='no-referrer',
+    #     permissions_policy={"geolocation": "()"},
+    # )
 
     # Initialize extensions
     db.init_app(app)
