@@ -5,3 +5,4 @@ _notes
 .venv*
 node_modules
 *.db
+.env

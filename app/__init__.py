@@ -1,7 +1,11 @@
 from os import environ
+import warnings
 from flask import Flask
-from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_talisman import Talisman
+from werkzeug.middleware.proxy_fix import ProxyFix
+from dotenv import load_dotenv
+# load environment variables from .env file
+load_dotenv(override=False)  # existing env vars prioritize
 from .app_config import Development, Production, Testing
 from .extensions import db, csrf, login_manager, migrate
 from .auth import bp as auth_bp
@@ -9,13 +13,22 @@ from .home import bp as home_bp
 from .profile import bp as profile_bp
 
 
-def create_app():
+CONFIGS = {
+    'dev': Development,
+    'prod': Production,
+    'test': Testing
+    }
+
+def create_app():   
     app = Flask(__name__)
+    app_env = environ.get('APP_ENV')
+    # HARDCODE: setup app env on heroku, then remove if condition
     if environ.get('HEROKU_PROD_ENV'):
-        config_class = Production()
-    else:
-        config_class = Development()
-    app.config.from_object(config_class)
+        app_env = 'prod'
+    elif app_env not in CONFIGS.keys():
+        warnings.warn(f"app env name {app_env or 'empty'} not defined, default use dev")
+    assert isinstance(app_env, str)
+    app.config.from_object(CONFIGS.get(app_env, Development))
 
     # to trust proxy headers injected by PaaS
     app.wsgi_app = ProxyFix(
