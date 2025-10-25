@@ -3,6 +3,7 @@ app configurations
 defined as class objects, used with `app.config.from_object(config_obj)`
 """
 import os
+from datetime import timedelta
 
 
 def _normalize_db_url(url: str) -> str:
@@ -22,6 +23,11 @@ class Base:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     assert isinstance(SQLALCHEMY_DATABASE_URI, str), "DATABASE_URL must be set in production"
     SQLALCHEMY_DATABASE_URI = _normalize_db_url(SQLALCHEMY_DATABASE_URI)
+    # session cookie settings
+    SSESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_SAMESITE="Strict"
+    PERMANENT_SESSION_LIFETIME=3600 * 24 * 3
     # talisman instance configs
     TALISMAN_FORCE_HTTPS = False      # sensible default; we’ll override in prod
     TALISMAN_CSP = {
