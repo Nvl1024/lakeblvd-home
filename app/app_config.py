@@ -27,9 +27,9 @@ class Base:
     TALISMAN_CSP = {
         "default-src": "'self'",
         "img-src": ["'self'", "data:", "blob:"],
-        "style-src": ["'self'"],      # tighten in prod if you don’t inline
-        "script-src": ["'self'"],
-        "font-src": ["'self'", "data:"],
+        "style-src": ["'self'", "https://fonts.googleapis.com"],      # tighten in prod if you don’t inline
+        "script-src": ["'self'", "https://cdn.tailwindcss.com"],
+        "font-src": ["'self'", "data:", "https://fonts.gstatic.com", "https://fonts.googleapis.com"],
         "connect-src": ["'self'"],
         "frame-ancestors": "'none'",
         "object-src": "'none'",
@@ -44,8 +44,8 @@ class Development(Base):
         **Base.TALISMAN_CSP,
         "default-src": "'self'",
         "img-src": ["'self'", "data:", "blob:"],
-        "style-src": ["'self'", "'unsafe-inline'"],  # tighten as you fix inline styles (or use nonces)
-        "script-src": ["'self'"],
+        "style-src": ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],  # tighten as you fix inline styles (or use nonces)
+        "script-src": ["'self'", "https://cdn.tailwindcss.com"],
     }
     SECRET_KEY = "/csp-report"
     SQLALCHEMY_DATABASE_URI = "sqlite:///lakeblvd-home.db"
