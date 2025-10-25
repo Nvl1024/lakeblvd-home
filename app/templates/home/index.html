@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
 
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='home/home.css') }}">
+{% endblock %}
+
 {% block content %}
 <main class="container mx-auto px-6 py-20 text-center">
     <div class="relative min-h-[60vh] flex items-center justify-center">
-        <div class="absolute inset-0 bg-cover bg-center opacity-40"
+        <div class="absolute inset-0 bg-cover bg-center opacity-40 hero-bg"></div>
+        <!-- CUTOVER: replace inline with css for home-bg -->
+        <!-- <div class="absolute inset-0 bg-cover bg-center opacity-40"
              style="background-image: url('{{ url_for('static', filename='home/lakeblvd-bg-1.png') }}'); z-index: 0;">
-        </div>
+        </div> -->
         <div class="relative z-10 max-w-3xl mx-auto bg-white/80 rounded-lg p-8 shadow-lg">
             {% if not current_user.is_authenticated %}
             <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">

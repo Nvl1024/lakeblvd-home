@@ -17,12 +17,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+    <style nonce="{{ nonce }}">
         /* Use Inter as the default font */
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
+    {% block head %}
+    {% endblock %}
 </head>
 
 <body>

@@ -1,0 +1,7 @@
+.hero-bg {
+    background-image: url('/static/home/lakeblvd-bg-1.png');
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.4;
+}
