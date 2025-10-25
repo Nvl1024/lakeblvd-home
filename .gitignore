@@ -6,3 +6,4 @@ _notes
 node_modules
 *.db
 .env
+.idea
