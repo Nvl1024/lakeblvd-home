@@ -8,7 +8,7 @@ from ..models import User
 
 
 @bp.route('/login', methods=["GET", "POST"])
-@limiter.limit("1 per second, 30 per minute")
+@limiter.limit("")
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -42,7 +42,7 @@ def register():
     return render_template("auth/register.html", register_form=form)
 
 @bp.route('/logout', methods=["GET", "POST"])
-@limiter.limit("3 per second")
+@limiter.limit("")
 @login_required
 def logout():
     form = LogoutForm()

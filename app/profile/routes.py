@@ -3,12 +3,14 @@ user profile page
 """
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
+from .. import limiter
 from ..models import User
 from ..auth.forms import LogoutForm
 from .forms import ChangePasswordForm
 from . import bp
 
 @bp.route(f'/profile', methods=["GET", "POST"])
+@limiter.limit("")
 @login_required
 def account():
     return render_template(
@@ -17,6 +19,7 @@ def account():
         )
 
 @bp.route('/profile/change_password', methods=["GET", "POST"])
+@limiter.limit("")
 @login_required
 def change_password():
     change_password_form = ChangePasswordForm()
