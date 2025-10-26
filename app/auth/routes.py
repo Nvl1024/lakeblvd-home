@@ -1,12 +1,14 @@
 from flask import flash, render_template, redirect, request, url_for
 from flask_login import login_user, logout_user, login_required
 from . import bp
+from .. import limiter
 from ..extensions import db
 from .forms import LoginForm, RegisterForm, LogoutForm
 from ..models import User
 
 
 @bp.route('/login', methods=["GET", "POST"])
+@limiter.limit("1 per second, 30 per minute")
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -23,6 +25,7 @@ def login():
     return render_template("auth/login.html", login_form=form)
 
 @bp.route('/register', methods=["GET", "POST"])
+@limiter.limit("5 per hour")
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -39,6 +42,7 @@ def register():
     return render_template("auth/register.html", register_form=form)
 
 @bp.route('/logout', methods=["GET", "POST"])
+@limiter.limit("3 per second")
 @login_required
 def logout():
     form = LogoutForm()

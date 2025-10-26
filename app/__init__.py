@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # load environment variables from .env file
 load_dotenv(override=False)  # existing env vars prioritize
 from .app_config import Development, Production, Testing
-from .extensions import db, csrf, login_manager, migrate
+from .extensions import db, csrf, login_manager, migrate, limiter
 from .auth import bp as auth_bp
 from .home import bp as home_bp
 from .profile import bp as profile_bp
@@ -55,6 +55,7 @@ def create_app():
     migrate.init_app(app, db)
     csrf.init_app(app)
     login_manager.init_app(app)
+    limiter.init_app(app)
     login_manager.login_view = "auth.login"
 
     # Register blueprints
