@@ -6,6 +6,7 @@ I'm a software developer specialized in test automation, machine learning, and w
 
 Already received the invitation code? [Register](/register) to access features.
 
-*Planned features:*
-- Note taking with two-factor encrypted cookie storage
-- Pomodoro timer
+**Planned features:**
+
+* Note taking with two-factor encrypted cookie storage
+* User personal blogs

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Nvl1024/lakeblvd-home#readme",
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.14"
