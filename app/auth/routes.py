@@ -1,3 +1,4 @@
+import os
 from flask import flash, render_template, redirect, request, url_for
 from flask_login import login_user, logout_user, login_required
 from . import bp
@@ -6,6 +7,8 @@ from ..extensions import db
 from .forms import LoginForm, RegisterForm, LogoutForm
 from ..models import User
 
+
+REQUIRE_INVITATION = os.getenv('REQUIRE_INVITATION', 'false').lower() == 'true'
 
 @bp.route('/login', methods=["GET", "POST"])
 @limiter.limit("")
@@ -39,7 +42,10 @@ def register():
         for field, errors in form.errors.items():
             for err in errors:
                 flash(f"{field}: {err}")
-    return render_template("auth/register.html", register_form=form)
+    return render_template(
+        "auth/register.html",
+        register_form=form,
+        require_invitation=REQUIRE_INVITATION)
 
 @bp.route('/logout', methods=["GET", "POST"])
 @limiter.limit("")
