@@ -49,7 +49,7 @@ class UserRoles(Enum):
   beta = "beta"
 
 class User(IdMixin, UserMixin, TimestampMixin, db.Model):
-  __tablename__ = "user"
+  __tablename__ = "reguser"
   name = db.Column(db.String(100), unique=True)
   password_hash = db.Column(db.String(255))
   invite_code = db.Column(db.String(26), db.ForeignKey("invite_code.id"))
@@ -139,7 +139,7 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
   def __str__(self) -> str:
     return self.id
   def __repr__(self) -> str:
-    return f"<InvitationCode id={self.id}>"
+    return f"<InvitationCode:{(" " + self.code) if self.code != self.id else ""} id={self.id}>"
 
 # MARKDOWN POST
 
@@ -148,7 +148,7 @@ class Posts(UlidMixin, TimestampMixin, db.Model):
   __tablename__ = "markdown_post"
   title = db.Column(db.String(100))
   content = db.Column(db.String(100))
-  author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+  author_id = db.Column(db.Integer, db.ForeignKey("reguser.id"))
 
 
 ## Table creation is handled in the app factory; avoid calling at import time.
