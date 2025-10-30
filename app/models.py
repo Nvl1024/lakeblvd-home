@@ -90,7 +90,7 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
     )
-  code = db.Column(db.String(26), default=id, nullable=False)
+  code = db.Column(db.String(26), default=id, nullable=False, unique=True)
   max_uses = db.Column(db.Integer, default=-1, nullable=False)
   uses = db.Column(db.Integer, default=0, nullable=False)
   duration = db.Column(db.Interval, default=datetime.timedelta(weeks=2), nullable=False)

@@ -32,7 +32,8 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(name=form.username.data)
+        invite_code = form.invite_code.data if REQUIRE_INVITATION else None
+        user = User(name=form.username.data, invite_code=invite_code)
         user.set_password(str(form.password.data))
         db.session.add(user)
         db.session.commit()
