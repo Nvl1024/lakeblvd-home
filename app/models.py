@@ -49,10 +49,10 @@ class UserRoles(Enum):
   beta = "beta"
 
 class User(IdMixin, UserMixin, TimestampMixin, db.Model):
-  __tablename__ = "user_table"
+  __tablename__ = "user"
   name = db.Column(db.String(100), unique=True)
   password_hash = db.Column(db.String(255))
-  invite_code = db.Column(db.ForeignKey("invite_code_table.id"))
+  invite_code = db.Column(db.ForeignKey("invite_code.id"))
   role = db.Column(
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
@@ -85,7 +85,7 @@ class User(IdMixin, UserMixin, TimestampMixin, db.Model):
 # REGISTRATION CONTROL
 
 class InviteCode(UlidMixin, TimestampMixin, db.Model):
-  __tablename__ = "invite_code_table"
+  __tablename__ = "invite_code"
   role = db.Column(
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
@@ -147,7 +147,7 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
 
 # TODO: migrate to notes blueprint
 class Posts(UlidMixin, TimestampMixin, db.Model):
-  __tablename__ = "post_table"
+  __tablename__ = "markdown_post"
   title = db.Column(db.String(100))
   content = db.Column(db.String(100))
   author_id = db.Column(db.ForeignKey("user.id"))
