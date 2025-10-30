@@ -13,16 +13,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # MIXINS
 
 class TimestampMixin:
-  created_at = db.Column(db.DateTime, default=datetime.datetime.now(), nullable=False)
-  updated_at = db.Column(db.DateTime, default=datetime.datetime.now(), nullable=False)
+  created_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
+  updated_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
   def update_time(self):
-    self.updated_at = datetime.datetime.now()
+    self.updated_at = datetime.datetime.now(datetime.timezone.utc)
 
 class IdMixin:
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
 class UlidMixin:
-  id = db.Column(db.String(26), default=str(ulid.ULID()), primary_key=True)
+  id = db.Column(db.String(26), default=lambda: str(ulid.ULID()), primary_key=True)
 
 class MarkdownMixin(UlidMixin, TimestampMixin):
   title = db.Column(db.String, default="Untitled", nullable=False)
@@ -52,7 +52,7 @@ class User(IdMixin, UserMixin, TimestampMixin, db.Model):
   __tablename__ = "user"
   name = db.Column(db.String(100), unique=True)
   password_hash = db.Column(db.String(255))
-  invite_code = db.Column(db.ForeignKey("invite_code.id"))
+  invite_code = db.Column(db.String(26), db.ForeignKey("invite_code.id"))
   role = db.Column(
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
@@ -90,7 +90,7 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
     )
-  code = db.Column(db.String(26), default=id, nullable=False, unique=True)
+  code = db.Column(db.String(26), default=lambda: str(ulid.ULID()), nullable=False, unique=True)
   max_uses = db.Column(db.Integer, default=-1, nullable=False)
   uses = db.Column(db.Integer, default=0, nullable=False)
   duration = db.Column(db.Interval, default=datetime.timedelta(weeks=2), nullable=False)
@@ -110,13 +110,11 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
     check if the invite code itself is valid
     this is useful in cleaning up invalid invitations from the db
     '''
-    # B. the invite code should not exceed max uses
-    if self.uses < self.max_uses:
-      if self.max_uses == -1:
-        return False
-      # max_uses = -1 means unlimited use
+    # B. the invite code should not exceed max uses (-1 means unlimited)
+    if self.max_uses != -1 and self.uses >= self.max_uses:
+      return False
     # C. should not pass expiry date
-    if datetime.datetime.now() > self.expires_at:
+    if datetime.datetime.now(datetime.timezone.utc) > self.expires_at:
       return False
     return True
 
@@ -150,7 +148,7 @@ class Posts(UlidMixin, TimestampMixin, db.Model):
   __tablename__ = "markdown_post"
   title = db.Column(db.String(100))
   content = db.Column(db.String(100))
-  author_id = db.Column(db.ForeignKey("user.id"))
+  author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
 ## Table creation is handled in the app factory; avoid calling at import time.
