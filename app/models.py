@@ -90,15 +90,53 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
     SaEnum(UserRoles, name="role", native_enum=True),
     nullable=False, default=UserRoles.default
     )
-  code = db.Column(db.String(26), default=id)
-  max_uses = db.Column(db.Integer, default=1)
-  uses = db.Column(db.Integer, default=0)
+  code = db.Column(db.String(26), default=id, nullable=False)
+  max_uses = db.Column(db.Integer, default=-1, nullable=False)
+  uses = db.Column(db.Integer, default=0, nullable=False)
+  duration = db.Column(db.Interval, default=datetime.timedelta(weeks=2), nullable=False)
+
+  @staticmethod
+  def lookup_code(invite_code: str):
+    invite_code_obj = InviteCode.query.get(invite_code)
+    if invite_code_obj is None:
+      raise LookupError(f"Invite code not found: {invite_code}")
+    return invite_code_obj
 
   @property
-  def is_available(self):
+  def is_valid(self) -> bool:
+    '''
+    check if the invite code itself is valid
+    this is useful in cleaning up invalid invitations from the db
+    '''
+    # B. the invite code should not exceed max uses
     if self.uses < self.max_uses:
-      return True
-    return False
+      if self.max_uses == -1:
+        return False
+      # max_uses = -1 means unlimited use
+    # C. should not pass expiry date
+    if datetime.datetime.now() > self.expires_at:
+      return False
+    return True
+
+  @property
+  def expires_at(self):
+    return self.created_at + self.duration
+
+  @staticmethod
+  def is_valid_code(invite_code: str) -> bool:
+    # A. the invite code should exist
+    try:
+      invite_code_obj = InviteCode.lookup_code(invite_code)
+    except LookupError:
+      return False
+    # checking it's the correct type, should always pass
+    assert isinstance(invite_code_obj, InviteCode)
+    # check inside the instance
+    return invite_code_obj.is_valid
+    
+
+  def use_code(self):
+    self.uses += 1
 
   def __str__(self) -> str:
     return self.id

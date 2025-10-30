@@ -19,6 +19,19 @@
                 </ul>
                 {% endif %}
             </p>
+            {% if require_invitation %}
+                <p>
+                    {{ register_form.invite_code.label }}
+                    {{ register_form.invite_code(size=32) }}<br>
+                    {% if register_form.invite_code.errors %}
+                    <ul>
+                        {% for error in register_form.invite_code.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </p>
+            {% endif %}
             <p>
                 {{ register_form.password.label }}
                 {{ register_form.password(size=32) }}<br>

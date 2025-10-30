@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, EqualTo, Length, ValidationError
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from ..models import User
+from ..models import User, InviteCode
 
 
 def username_valid(form, field):
@@ -13,11 +13,26 @@ def username_valid(form, field):
     if not User.is_valid_name(username):
         raise ValidationError("This username is already taken.")
 
+def invite_code_valid(form, field):
+    """
+    WTForms validator: 
+    """
+    invite_code = field.data or ""
+    if not InviteCode.is_valid_code(invite_code):
+        raise ValidationError("Invite code is invalid")
+
 class RegisterForm(FlaskForm):
     username = StringField(
         label="Username:",
         validators=[
             DataRequired(), username_valid])
+    invite_code = StringField(
+        label="Invite code:",
+        validators=[
+            DataRequired('Invite code is required'),
+            invite_code_valid
+        ]
+    )
     password = PasswordField(
         label="Enter your password:",
         validators=[
