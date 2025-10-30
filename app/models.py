@@ -97,9 +97,11 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
 
   @staticmethod
   def lookup_code(invite_code: str):
-    invite_code_obj = InviteCode.query.get(invite_code)
+    invite_code_obj = InviteCode.query.filter(InviteCode.code == invite_code).first()
     if invite_code_obj is None:
       raise LookupError(f"Invite code not found: {invite_code}")
+    # checking it's the correct type, should always pass
+    assert isinstance(invite_code_obj, InviteCode)
     return invite_code_obj
 
   @property
@@ -129,8 +131,6 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
       invite_code_obj = InviteCode.lookup_code(invite_code)
     except LookupError:
       return False
-    # checking it's the correct type, should always pass
-    assert isinstance(invite_code_obj, InviteCode)
     # check inside the instance
     return invite_code_obj.is_valid
     
