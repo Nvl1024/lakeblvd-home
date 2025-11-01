@@ -53,8 +53,8 @@ class Development(Base):
         "style-src": ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],  # tighten as you fix inline styles (or use nonces)
         "script-src": ["'self'", "https://cdn.tailwindcss.com"],
     }
-    SECRET_KEY = "/csp-report"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///lakeblvd-home.db"
+    # SECRET_KEY = "/csp-report"  # shouldn't use directly, inherit from base
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://localhost/lakeblvd_dev"
     TALISMAN_FORCE_HTTPS = False
     # FIXME: Setting content_security_policy_report_only to True also requires
     # a URI to be specified in content_security_policy_report_uri
@@ -63,9 +63,10 @@ class Development(Base):
     TALISMAN_REPORT_ONLY = False
 
 class Production(Base):
+    """responsible for staging and production, in one config set"""
     TALISMAN_FORCE_HTTPS = True
 
-class Testing(Base):
+class Testing(Development):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://localhost/lakeblvd_test"
