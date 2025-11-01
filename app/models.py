@@ -6,6 +6,7 @@ import ulid
 from flask_login import UserMixin
 from enum import Enum
 from sqlalchemy import Enum as SaEnum
+from sqlalchemy import text, Interval
 from .extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -13,8 +14,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # MIXINS
 
 class TimestampMixin:
-  created_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
-  updated_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
+  created_at = db.Column(
+    db.DateTime(timezone=True),
+    default=lambda: datetime.datetime.now(datetime.timezone.utc),
+    nullable=False
+    )
+  updated_at = db.Column(
+    db.DateTime(timezone=True),
+    default=datetime.datetime.now(datetime.timezone.utc),
+    nullable=False
+    )
   def update_time(self):
     self.updated_at = datetime.datetime.now(datetime.timezone.utc)
 
@@ -48,14 +57,16 @@ class UserRoles(Enum):
   admin = "admin"
   beta = "beta"
 
+USER_DEFAULT_ROLE = UserRoles.default
+
 class User(IdMixin, UserMixin, TimestampMixin, db.Model):
   __tablename__ = "reguser"
   name = db.Column(db.String(100), unique=True)
   password_hash = db.Column(db.String(255))
   invite_code = db.Column(db.String(26), db.ForeignKey("invite_code.id"))
   role = db.Column(
-    SaEnum(UserRoles, name="role", native_enum=True),
-    nullable=False, default=UserRoles.default
+    SaEnum(UserRoles, name="role", native_enum=True), nullable=False,
+    default=USER_DEFAULT_ROLE, server_default = USER_DEFAULT_ROLE.value
     )
 
   def set_password(self, password: str) -> None:
@@ -88,12 +99,26 @@ class InviteCode(UlidMixin, TimestampMixin, db.Model):
   __tablename__ = "invite_code"
   role = db.Column(
     SaEnum(UserRoles, name="role", native_enum=True),
-    nullable=False, default=UserRoles.default
+    nullable=False,
+    default=USER_DEFAULT_ROLE, server_default=USER_DEFAULT_ROLE.value
     )
-  code = db.Column(db.String(26), default=lambda: str(ulid.ULID()), nullable=False, unique=True)
-  max_uses = db.Column(db.Integer, default=-1, nullable=False)
-  uses = db.Column(db.Integer, default=0, nullable=False)
-  duration = db.Column(db.Interval, default=datetime.timedelta(weeks=2), nullable=False)
+  code = db.Column(
+    db.String(26), nullable=False, unique=True,
+    default=lambda: str(ulid.ULID())
+    )
+  max_uses = db.Column(
+    db.Integer, nullable=False,
+    default=-1, server_default="-1"
+    )
+  uses = db.Column(
+    db.Integer, nullable=False,
+    default=0, server_default="0"
+    )
+  duration = db.Column(
+    db.Interval, nullable=False,
+    default=datetime.timedelta(weeks=2),
+    server_default=text("interval '2 weeks'")
+    )
 
   @staticmethod
   def lookup_code(invite_code: str):
