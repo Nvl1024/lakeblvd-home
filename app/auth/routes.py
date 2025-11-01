@@ -5,7 +5,7 @@ from . import bp
 from .. import limiter
 from ..extensions import db
 from .forms import LoginForm, RegisterForm, LogoutForm
-from ..models import User
+from ..models import User, InviteCode
 
 
 REQUIRE_INVITATION = os.getenv('REQUIRE_INVITATION', 'false').lower() == 'true'
@@ -32,8 +32,14 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        invite_code = form.invite_code.data if REQUIRE_INVITATION else None
-        user = User(name=form.username.data, invite_code=invite_code)
+        if REQUIRE_INVITATION:
+            invite_code = form.invite_code.data
+            assert isinstance(invite_code, str), f"expected invite code type string, not {type(invite_code)}"
+            invite_code_id = InviteCode.lookup_code(invite_code).id
+            assert isinstance(invite_code_id, str), f"expected invite code id type string, not {type(invite_code_id)}"
+            user = User(name=form.username.data, invite_code=invite_code_id)
+        else:
+            user = User(name=form.username.data)
         user.set_password(str(form.password.data))
         db.session.add(user)
         db.session.commit()
