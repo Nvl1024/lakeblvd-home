@@ -28,6 +28,8 @@ class Base:
     SESSION_COOKIE_HTTPONLY=True
     SESSION_COOKIE_SAMESITE="Strict"
     PERMANENT_SESSION_LIFETIME=3600 * 24 * 3
+    # registration control
+    REQUIRE_INVITATION=True
     # talisman instance configs
     TALISMAN_FORCE_HTTPS = False      # sensible default; we’ll override in prod
     TALISMAN_CSP = {
