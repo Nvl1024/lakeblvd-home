@@ -5,7 +5,7 @@ import os
 os.environ["REQUIRE_INVITATION"]="true"
 os.environ["APP_ENV"]="test"
 import sys
-sys.path.insert(1, os.path.normpath(os.path.join(__file__, "../..")))
+sys.path.insert(1, os.path.normpath(os.path.join(__file__, "../../..")))
 import unittest
 import datetime
 from flask import url_for
