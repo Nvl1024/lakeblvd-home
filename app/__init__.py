@@ -86,7 +86,8 @@ def create_app():
         # logging
         @app.errorhandler(400)
         def bad_request(e):
-            app.logger.warning(f"400 Error: {e}")
+            import traceback
+            app.logger.warning(f"400 Error: {e}\n{traceback.format_exc()}")
             return "Bad Request", 400
         # create db tables
         db.create_all()
