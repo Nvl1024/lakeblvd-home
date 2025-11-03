@@ -6,7 +6,7 @@ import ulid
 from flask_login import UserMixin
 from enum import Enum
 from sqlalchemy import Enum as SaEnum
-from sqlalchemy import text, Interval
+from sqlalchemy import text, Interval, func
 from .extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -17,11 +17,13 @@ class TimestampMixin:
   created_at = db.Column(
     db.DateTime(timezone=True),
     default=lambda: datetime.datetime.now(datetime.timezone.utc),
+    server_default=func.now(),
     nullable=False
     )
   updated_at = db.Column(
     db.DateTime(timezone=True),
     default=datetime.datetime.now(datetime.timezone.utc),
+    server_default=func.now(),
     nullable=False
     )
   def update_time(self):
