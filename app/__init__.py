@@ -89,8 +89,9 @@ def create_app():
             import traceback
             app.logger.warning(f"400 Error: {e}\n{traceback.format_exc()}")
             return "Bad Request", 400
-        # create db tables
-        db.create_all()
+        # create db tables, except for production
+        if app_env in ["dev", "test"]:
+            db.create_all()
 
     return app
 
