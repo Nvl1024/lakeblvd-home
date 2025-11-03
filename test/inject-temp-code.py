@@ -3,6 +3,7 @@ inject temporary invite code
 into production environment from envar
 """
 import os
+os.environ["APP_ENV"] = "prod"
 from injection import *
 
 def main():

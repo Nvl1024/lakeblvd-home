@@ -3,8 +3,8 @@ insert invite code into test environment
 """
 # set environment variables
 import os
-os.environ["REQUIRE_INVITATION"]="true"
-os.environ["APP_ENV"]="test"
+if not os.getenv("APP_ENV"):
+    os.environ["APP_ENV"]="test"
 # set import path
 import sys
 sys.path.insert(1, os.path.normpath(os.path.join(__file__, "../..")))
