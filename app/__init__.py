@@ -1,5 +1,7 @@
-from os import environ
+import os
 import warnings
+import logging
+import sys
 from flask import Flask
 from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -21,9 +23,9 @@ CONFIGS = {
 
 def create_app():   
     app = Flask(__name__)
-    app_env = environ.get('APP_ENV')
+    app_env = os.environ.get('APP_ENV')
     # HARDCODE: setup app env on heroku, then remove if condition
-    if environ.get('HEROKU_PROD_ENV'):
+    if os.environ.get('HEROKU_PROD_ENV'):
         app_env = 'prod'
     elif app_env not in CONFIGS.keys():
         warnings.warn(f"app env name {app_env or 'empty'} not defined, default use dev")
@@ -50,6 +52,13 @@ def create_app():
         permissions_policy={"geolocation": "()"},
     )
 
+    # logging
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
@@ -74,6 +83,12 @@ def create_app():
                 return User.query.get(int(user_id))
             except (TypeError, ValueError):
                 return None
+        # logging
+        @app.errorhandler(400)
+        def bad_request(e):
+            app.logger.warning(f"400 Error: {e}")
+            return "Bad Request", 400
+        # create db tables
         db.create_all()
 
     return app
