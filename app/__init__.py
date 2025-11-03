@@ -48,7 +48,7 @@ def create_app():
         strict_transport_security=app.config.get("TALISMAN_FORCE_HTTPS"),
         strict_transport_security_max_age=31536000,
         frame_options='DENY',
-        referrer_policy='no-referrer',
+        referrer_policy='strict-origin-when-cross-origin',
         permissions_policy={"geolocation": "()"},
     )
 
