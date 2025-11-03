@@ -11,7 +11,7 @@ from ..models import User, InviteCode
 REQUIRE_INVITATION = os.getenv('REQUIRE_INVITATION', 'false').lower() == 'true'
 
 @bp.route('/login', methods=["GET", "POST"])
-@limiter.limit("")
+@limiter.limit("10 per minute")
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -28,7 +28,7 @@ def login():
     return render_template("auth/login.html", login_form=form)
 
 @bp.route('/register', methods=["GET", "POST"])
-@limiter.limit("5 per hour")
+@limiter.limit("5 per minute")
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -55,7 +55,7 @@ def register():
         require_invitation=REQUIRE_INVITATION)
 
 @bp.route('/logout', methods=["GET", "POST"])
-@limiter.limit("")
+@limiter.limit("10 per minute")
 @login_required
 def logout():
     form = LogoutForm()
