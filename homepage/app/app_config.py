@@ -80,6 +80,7 @@ class Development(Base):
 class Production(Base):
     """responsible for staging and production, in one config set"""
     TALISMAN_FORCE_HTTPS = True
+    SQLALCHEMY_DATABASE_URI = build_db_url()
 
 class Testing(Development):
     DEBUG = True
