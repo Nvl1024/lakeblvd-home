@@ -4,7 +4,20 @@ defined as class objects, used with `app.config.from_object(config_obj)`
 """
 import os
 from datetime import timedelta
+from urllib.parse import quote_plus
 
+def build_db_url() -> str:
+    if "DATABASE_URL" not in os.environ:
+        raise RuntimeError("DATABASE_URL must be set")
+
+    base_url = _normalize_db_url(os.environ["DATABASE_URL"])
+    schema = os.getenv("APP_DB_SCHEMA")
+
+    if not schema:
+        return base_url
+
+    sep = "&" if "?" in base_url else "?"
+    return f"{base_url}{sep}options={quote_plus(f'-csearch_path={schema}')}"
 
 def _normalize_db_url(url: str) -> str:
     # SQLAlchemy wants postgresql:// not postgres://
@@ -24,7 +37,7 @@ class Base:
     assert isinstance(SQLALCHEMY_DATABASE_URI, str), "APP_DATABASE_URL must be set in production"
     SQLALCHEMY_DATABASE_URI = _normalize_db_url(SQLALCHEMY_DATABASE_URI)
     # session cookie settings
-    SSESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=True
     SESSION_COOKIE_HTTPONLY=True
     SESSION_COOKIE_SAMESITE="Strict"
     PERMANENT_SESSION_LIFETIME=3600 * 24 * 3
