@@ -16,12 +16,12 @@ class Base:
     # flask app secret key
     if "FLASK_KEY" not in os.environ:
         raise RuntimeError("FLASK_KEY must be set")
-    if "DATABASE_URL" not in os.environ:
-        raise RuntimeError("DATABASE_URL must be set")
+    if "APP_DATABASE_URL" not in os.environ:
+        raise RuntimeError("APP_DATABASE_URL must be set")
     SECRET_KEY = os.getenv("FLASK_KEY")
     # sqlite uri
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
-    assert isinstance(SQLALCHEMY_DATABASE_URI, str), "DATABASE_URL must be set in production"
+    SQLALCHEMY_DATABASE_URI = os.getenv("APP_DATABASE_URL")
+    assert isinstance(SQLALCHEMY_DATABASE_URI, str), "APP_DATABASE_URL must be set in production"
     SQLALCHEMY_DATABASE_URI = _normalize_db_url(SQLALCHEMY_DATABASE_URI)
     # session cookie settings
     SSESSION_COOKIE_SECURE=True
