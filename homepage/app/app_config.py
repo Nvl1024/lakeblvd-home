@@ -7,10 +7,10 @@ from datetime import timedelta
 from urllib.parse import quote_plus
 
 def build_db_url() -> str:
-    if "DATABASE_URL" not in os.environ:
-        raise RuntimeError("DATABASE_URL must be set")
+    if "APP_DATABASE_URL" not in os.environ:
+        raise RuntimeError("APP_DATABASE_URL must be set")
 
-    base_url = _normalize_db_url(os.environ["DATABASE_URL"])
+    base_url = _normalize_db_url(os.environ["APP_DATABASE_URL"])
     schema = os.getenv("APP_DB_SCHEMA")
 
     if not schema:
