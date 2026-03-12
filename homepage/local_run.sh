@@ -9,8 +9,8 @@ else
     export APP_ENV="dev"
 fi
 export FLASK_KEY="b72ee9b7-3c6e-470b-a912-007df5bca4e8"
-# export DATABASE_URL="sqlite:///lakeblvd-home.db"
-export DATABASE_URL="postgresql+psycopg://localhost/lakeblvd_dev"
+# export APP_DATABASE_URL="sqlite:///lakeblvd-home.db"
+export APP_DATABASE_URL="postgresql+psycopg://localhost/lakeblvd_dev"
 export REQUIRE_INVITATION="true"
 # run flask with gunicorn
 # gunicorn -b 127.0.0.1:5000 "app:create_app()" 
